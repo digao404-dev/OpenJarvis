@@ -208,6 +208,9 @@ class CapabilityPolicy:
 # weaken these.  Keep explicitly-safe tools in the table with an empty list so
 # an omitted future built-in can be distinguished from a reviewed safe one.
 DEFAULT_TOOL_CAPABILITIES: Dict[str, List[str]] = {
+    "aily_vault_search": [Capability.MEMORY_READ],
+    "aily_prepare_action": [Capability.MEMORY_WRITE],
+    "aily_action_status": [Capability.MEMORY_READ],
     "agent_kill": [Capability.SYSTEM_ADMIN],
     "agent_list": [Capability.SYSTEM_ADMIN],
     "agent_send": [Capability.SYSTEM_ADMIN],

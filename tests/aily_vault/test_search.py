@@ -93,7 +93,7 @@ def test_cli_and_mcp_return_the_same_curated_note(tmp_path: Path):
     )
     responses = [json.loads(line) for line in mcp.stdout.splitlines()]
     assert [tool["name"] for tool in responses[1]["result"]["tools"]] == [
-        "aily_vault_search"
+        "aily_vault_search", "aily_prepare_action", "aily_action_status"
     ]
     assert responses[2]["result"]["isError"] is False
     assert str(note) in responses[2]["result"]["content"][0]["text"]

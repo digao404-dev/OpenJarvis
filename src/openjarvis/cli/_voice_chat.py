@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from typing import Any, Optional
 
 from rich.markup import escape
@@ -119,7 +120,12 @@ class VoiceSession:
 def read_voice_input(console: Any, session: VoiceSession) -> Optional[str] | object:
     """Accept a typed command/message, or record after an empty submission."""
     try:
-        typed = input("You> [type, or press Enter to speak] ")
+        prompt = (
+            "Você> [digite ou pressione Enter para falar] "
+            if os.environ.get("AILY_MODE") == "1"
+            else "You> [type, or press Enter to speak] "
+        )
+        typed = input(prompt)
     except (EOFError, KeyboardInterrupt):
         return VOICE_EXIT
     typed = typed.strip()

@@ -173,6 +173,12 @@ except ImportError:
     pass
 
 try:
+    import openjarvis.tools.aily_actions  # noqa: F401
+    import openjarvis.tools.aily_vault_search  # noqa: F401
+except ImportError:
+    pass
+
+try:
     import openjarvis.tools.browser  # noqa: F401
     import openjarvis.tools.browser_axtree  # noqa: F401
 except ImportError:

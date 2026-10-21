@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from typing import List, Optional
 
@@ -259,14 +260,17 @@ def chat(
 
                 import inspect as _inspect
 
-                if (
-                    "prompt_builder"
-                    in _inspect.signature(agent_cls.__init__).parameters
-                ):
+                agent_params = _inspect.signature(agent_cls.__init__).parameters
+                if system_prompt and "system_prompt" in agent_params:
+                    kwargs["system_prompt"] = system_prompt
+
+                if "prompt_builder" in agent_params:
                     from openjarvis.prompt.builder import SystemPromptBuilder
 
                     kwargs["prompt_builder"] = SystemPromptBuilder(
-                        agent_template=config.agent.default_system_prompt or "",
+                        agent_template=(
+                            system_prompt or config.agent.default_system_prompt or ""
+                        ),
                         memory_files_config=effective_mf,
                         system_prompt_config=config.system_prompt,
                     )
@@ -293,6 +297,15 @@ def chat(
 
     # Keep voice state outside the core chat path so picker/runtime changes can
     # be layered independently. Loaded speech models live for this session.
+    if os.environ.get("AILY_MODE") == "1" and not config.speech.language:
+        config.speech.language = "pt"
+    if (
+        os.environ.get("AILY_MODE") == "1"
+        and config.speech.tts_backend == "kokoro"
+        and config.speech.voice_id == "bm_george"
+    ):
+        config.speech.tts_backend = "macos_tts"
+        config.speech.voice_id = "Luciana"
     voice_session = VoiceSession(config) if voice_mode else None
 
     # Print banner
@@ -302,8 +315,9 @@ def chat(
         if voice_mode
         else ""
     )
+    title = "AILY" if os.environ.get("AILY_MODE") == "1" else "OpenJarvis Chat"
     console.print(
-        f"[green bold]OpenJarvis Chat[/green bold]\n"
+        f"[green bold]{title}[/green bold]\n"
         f"  Engine: [cyan]{_safe_rich_label(engine_name)}[/cyan]  "
         f"Model: [cyan]{_safe_rich_label(model)}[/cyan]"
         f"  Agent: [cyan]{_safe_rich_label(agent_key or 'direct')}[/cyan]\n"
@@ -377,7 +391,9 @@ def chat(
                 continue  # nothing heard, loop again
             user_input = result
         else:
-            user_input = _read_input()
+            user_input = _read_input(
+                "Você> " if os.environ.get("AILY_MODE") == "1" else "You> "
+            )
             if user_input is None:
                 console.print("\n[dim]Goodbye![/dim]")
                 break

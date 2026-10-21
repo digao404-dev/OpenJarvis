@@ -21,7 +21,8 @@ jarvis memory vault-search --include-pending classificacao
 
 ## Claude Code via MCP
 
-O servidor stdio expõe somente a ferramenta de leitura `aily_vault_search`:
+O servidor stdio expõe `aily_vault_search`, `aily_prepare_action` e
+`aily_action_status`. A execução exige `aily action approve ID` no terminal:
 
 ```sh
 claude mcp add aily-vault -- /CAMINHO/DA/VENV/bin/python -m openjarvis.aily_vault.mcp_stdio
@@ -29,8 +30,8 @@ claude mcp add aily-vault -- /CAMINHO/DA/VENV/bin/python -m openjarvis.aily_vaul
 
 Instale o fork na mesma venv antes de registrar o servidor. Configure
 `AILY_VAULT_PATH` no ambiente do processo Claude se o vault não estiver no
-caminho padrão. A configuração do Claude e as credenciais do usuário não são
-alteradas automaticamente por este projeto.
+caminho padrão. O servidor MCP não executa ações pendentes. Configure o Google Calendar
+se quiser criar eventos após aprovação.
 
 O comando `jarvis vault` do OpenJarvis gerencia credenciais criptografadas;
 não se refere ao vault Markdown da AILY.

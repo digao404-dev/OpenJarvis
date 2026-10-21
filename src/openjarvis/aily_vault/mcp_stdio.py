@@ -7,11 +7,14 @@ import sys
 
 from openjarvis.mcp.protocol import MCPRequest
 from openjarvis.mcp.server import MCPServer
+from openjarvis.tools.aily_actions import AilyActionStatusTool, AilyPrepareActionTool
 from openjarvis.tools.aily_vault_search import AilyVaultSearchTool
 
 
 def main() -> None:
-    server = MCPServer(tools=[AilyVaultSearchTool()])
+    server = MCPServer(
+        tools=[AilyVaultSearchTool(), AilyPrepareActionTool(), AilyActionStatusTool()]
+    )
     for line in sys.stdin:
         try:
             payload = json.loads(line)
