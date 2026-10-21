@@ -40,6 +40,34 @@ def memory() -> None:
     """Manage the memory store."""
 
 
+@memory.command("vault-index")
+def vault_index() -> None:
+    """Refresh AILY's local Markdown vault search index."""
+    from openjarvis.aily_vault import VaultIndex
+
+    try:
+        changed, removed = VaultIndex().sync()
+    except (OSError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(f"Índice atualizado: {changed} nota(s); {removed} removida(s).")
+
+
+@memory.command("vault-search")
+@click.argument("query", nargs=-1, required=True)
+@click.option("--top-k", default=5, type=click.IntRange(1, 20))
+@click.option("--include-pending", is_flag=True, default=False)
+def vault_search(query: tuple[str, ...], top_k: int, include_pending: bool) -> None:
+    """Search the vault with the same engine exposed to Claude over MCP."""
+    from openjarvis.tools.aily_vault_search import AilyVaultSearchTool
+
+    result = AilyVaultSearchTool().execute(
+        query=" ".join(query), top_k=top_k, include_pending=include_pending,
+    )
+    if not result.success:
+        raise click.ClickException(result.content)
+    click.echo(result.content)
+
+
 @memory.command()
 @click.argument("path")
 @click.option(

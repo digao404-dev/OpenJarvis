@@ -22,6 +22,7 @@ _MCP_AGENT_ID = "mcp"
 
 # Tool annotation hints per MCP spec 2025-11-25
 _TOOL_ANNOTATIONS: Dict[str, Dict[str, Any]] = {
+    "aily_vault_search": {"readOnlyHint": True, "destructiveHint": False},
     "memory_store": {"destructiveHint": True, "readOnlyHint": False},
     "memory_retrieve": {"readOnlyHint": True, "destructiveHint": False},
     "memory_search": {"readOnlyHint": True, "destructiveHint": False},
@@ -139,6 +140,13 @@ class MCPServer:
             pass
 
         # Storage MCP tools
+        try:
+            from openjarvis.tools.aily_vault_search import AilyVaultSearchTool
+
+            _tool_classes.append(AilyVaultSearchTool)
+        except ImportError:
+            pass
+
         try:
             from openjarvis.tools.storage_tools import (
                 MemoryIndexTool,
